@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>NCR balance</title>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+<script>
+const account = location.search.substr(9);
+//const account = "0xAeC05c2a88f2b7896005086aDBaBA3CfD81b63bE";
+const tokenAddress = "0xDB5C3C46E28B53a39C255AA39A411dD64e5fed9c";
+
+const data = 
+  web3.sha3("balanceOf(address)").substr(0, 10) +
+  '000000000000000000000000' + account.substr(2);     // chop off the 0x
+
+fetch('https://cloudflare-eth.com/', {
+  method: 'POST',
+  body: JSON.stringify({
+    jsonrpc: "2.0",
+    id: 1,
+    method: "eth_call",
+    params: [{
+      to: tokenAddress,
+      data: data,
+    }, 'latest'],
+  }),
+  headers: new Headers({
+    'Content-Type': 'application/json'
+  }),
+}).then(response =>
+  response.json()
+).then(json =>
+  console.log(web3.toDecimal(json.result)/1000000000000000000)
+);
+</script>
+	
+</head>
+<body>
+
+</body>
+</html>
